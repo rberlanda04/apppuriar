@@ -1,0 +1,14 @@
+node_modules/
+.env
+.DS_Store
+Thumbs.db
+
+# Client specific ignores
+client/node_modules/
+client/dist/
+client/.env
+client/.env.local
+
+# Gemini specific ignores
+.gemini/
+brain/
