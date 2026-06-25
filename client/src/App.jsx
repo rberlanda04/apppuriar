@@ -54,6 +54,7 @@ const getStatus = (value) => {
 
 // Curitiba spots mockup configuration
 const curitibaSpots = [
+  { id: 'marista', name: 'Colégio Marista Anjo da Guarda', valueMultiplier: 1.0, x: 62, y: 56, desc: 'Localização física do dispositivo Breezy sensor MQ135 conectado via COM45.', isGreenZone: true },
   { id: 'tangua', name: 'Parque Tanguá', valueMultiplier: 0.7, x: 50, y: 18, desc: 'Zona Norte. Excelente circulação atmosférica, níveis de CO2 extremamente baixos.', isGreenZone: true },
   { id: 'barigui', name: 'Parque Barigui', valueMultiplier: 0.8, x: 22, y: 42, desc: 'Zona Oeste. Preservado cinturão verde, ideal para corridas e práticas de esporte na grama.', isGreenZone: true },
   { id: 'centro', name: 'Centro (Rua XV)', valueMultiplier: 1.35, x: 50, y: 50, desc: 'Região Central. Concentração de poluentes decorrentes de tráfego intenso e comércio.', isGreenZone: false },
@@ -65,7 +66,7 @@ const curitibaSpots = [
 function App() {
   const [sensorValue, setSensorValue] = useState(480); // Default start around 480 PPM
   const [data, setData] = useState({ value: 480, timestamp: null, simulated: true });
-  const [selectedSpot, setSelectedSpot] = useState(null);
+  const [selectedSpot, setSelectedSpot] = useState('marista'); // Start focused on the device's location
   const [history, setHistory] = useState(new Array(20).fill(480));
 
   // Determine current active spot or main sensor
@@ -88,23 +89,23 @@ function App() {
       
       {/* Navbar UI */}
       <nav className="w-full max-w-6xl flex justify-between items-center mb-12 px-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20">
-            <Waves className="text-white w-6 h-6" />
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-900/20 p-1 border border-white/10">
+            <img src="/breezy_logo.png" alt="Breezy Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight">AIR<span className="text-blue-500">CAST</span></h1>
-            <div className="flex items-center gap-2">
-              <span className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Curitiba PPM Map</span>
+            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-transparent">Breezy</h1>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Qualidade do Ar Curitiba</span>
             </div>
           </div>
         </div>
         
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => setSelectedSpot(null)}
-            className={`badge transition-all flex items-center gap-1.5 ${!selectedSpot ? 'badge-success ring-2 ring-emerald-500/50' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
+            onClick={() => setSelectedSpot('marista')}
+            className={`badge transition-all flex items-center gap-1.5 ${selectedSpot === 'marista' ? 'badge-success ring-2 ring-emerald-500/50' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}
           >
             <MapPinIcon size={12} /> Sensor Geral COM45
           </button>
@@ -349,8 +350,8 @@ function App() {
       </main>
 
       <footer className="mt-20 pb-8 w-full max-w-6xl flex flex-col md:flex-row justify-between items-center text-slate-600 border-t border-white/5 pt-8 px-4 gap-4">
-        <p className="text-xs font-medium">© 2026 AIRCAST PRO SYSTEM. SIMULAÇÃO ESPACIAL DE POLUIÇÃO PARA CURITIBA EM PPM.</p>
-        <div className="flex gap-6">
+        <p className="text-xs font-medium">© 2026 Breezy · Sistema de Monitoramento de Qualidade do Ar · Curitiba, PR</p>
+        <div className="flex gap-6 text-slate-500">
           <Activity size={16} />
           <Wind size={16} />
           <Waves size={16} />
