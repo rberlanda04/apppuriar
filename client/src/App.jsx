@@ -7,7 +7,14 @@ import {
   MapPin as MapPinIcon, TrendingUp, Dumbbell
 } from 'lucide-react';
 
-const socket = io('http://localhost:3001');
+// Detecta se estamos em ambiente de produção (Vercel) ou local
+const isProduction = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+// Em produção (Vercel), não tenta conectar ao servidor — roda em modo demo
+let socket = null;
+if (!isProduction) {
+  socket = io('http://localhost:3001');
+}
 
 const getStatus = (value) => {
   if (value < 500) return { 
@@ -75,13 +82,24 @@ function App() {
   const status = getStatus(displayValue);
 
   useEffect(() => {
-    socket.on('air_data', (payload) => {
-      setSensorValue(payload.value);
-      setData(payload);
-      setHistory(prev => [...prev.slice(1), payload.value]);
-    });
-
-    return () => socket.off('air_data');
+    if (socket) {
+      // Modo local: recebe dados reais do servidor via WebSocket
+      socket.on('air_data', (payload) => {
+        setSensorValue(payload.value);
+        setData(payload);
+        setHistory(prev => [...prev.slice(1), payload.value]);
+      });
+      return () => socket.off('air_data');
+    } else {
+      // Modo demo (Vercel): simula dados do sensor no próprio navegador
+      const interval = setInterval(() => {
+        const simulatedValue = Math.floor(Math.random() * (520 - 380 + 1) + 380);
+        setSensorValue(simulatedValue);
+        setData({ value: simulatedValue, timestamp: new Date().toISOString(), simulated: true });
+        setHistory(prev => [...prev.slice(1), simulatedValue]);
+      }, 2500);
+      return () => clearInterval(interval);
+    }
   }, []);
 
   return (
@@ -109,8 +127,8 @@ function App() {
           >
             <MapPinIcon size={12} /> Sensor Geral COM45
           </button>
-          <div className={`badge ${data.simulated ? 'badge-warning' : 'badge-success'}`}>
-            {data.simulated ? 'Simulação' : 'Sensor Online'}
+          <div className={`badge ${data.simulated ? (isProduction ? 'badge-info' : 'badge-warning') : 'badge-success'}`}>
+            {data.simulated ? (isProduction ? '🌐 Demo Online' : 'Simulação') : 'Sensor Online'}
           </div>
         </div>
       </nav>

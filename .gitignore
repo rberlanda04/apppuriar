@@ -9,6 +9,9 @@ client/dist/
 client/.env
 client/.env.local
 
+# Logs
+*.log
+
 # Gemini specific ignores
 .gemini/
 brain/

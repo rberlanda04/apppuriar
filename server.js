@@ -5,9 +5,13 @@ const { Server } = require('socket.io');
 const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(cors());
+
+// Servir os arquivos estáticos compilados do React (Vite)
+app.use(express.static(path.join(__dirname, 'client/dist')));
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
@@ -103,6 +107,11 @@ function connectSerial() {
 }
 
 connectSerial();
+
+// Redireciona qualquer outra rota para o frontend (SPA)
+app.get(/(.*)/, (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+});
 
 server.listen(PORT, () => {
     console.log(`==========================================`);
